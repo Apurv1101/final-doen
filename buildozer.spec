@@ -40,7 +40,7 @@ version = 0.1
 # - numpy: Core dependency for OpenCV and general numerical operations.
 # - requests: Used for submitting data to Google Forms.
 # - pillow: A common image processing library often implicitly required by Kivy and OpenCV for certain image formats/operations.
-requirements = python3.1.1,kivy==2.0.0,kivymd,opencv-python,numpy,requests,pillow
+requirements = python3,kivy==2.0.0,kivymd,opencv-python,numpy,requests,pillow
 
 # (str) Source code where the main.py lives
 source.dir = .
