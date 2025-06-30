@@ -21,7 +21,7 @@
 title = My Face Recognition App
 
 # (str) Package name
-package.name = facerecognitionapp
+package.name = recognitionapp
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.nextgenbywala
@@ -36,7 +36,7 @@ version = 1.0.0
 # - numpy: Core dependency for OpenCV and general numerical operations.
 # - requests: Used for submitting data to Google Forms.
 # - pillow: A common image processing library often implicitly required by Kivy and OpenCV.
-requirements = python3,kivy==2.3.0,opencv-python,numpy,requests,pillow
+requirements = python3,kivy==2.3.0,opencv-python,numpy,requests,pillow,smtplib
 
 # (str) Source code where the main.py lives
 source.dir = .
