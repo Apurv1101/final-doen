@@ -27,12 +27,13 @@ jobs:
 
       - name: Setup Android SDK Tools
         run: |
-          mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest
-          cd $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools
+          cd $HOME/.buildozer/android/platform/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O sdk.zip
-          unzip sdk.zip
-          chmod +x bin/*
-          yes | ./bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platforms;android-33" "platform-tools" "build-tools;34.0.0"
+          unzip sdk.zip -d tmp
+          mkdir -p latest
+          mv tmp/cmdline-tools/* latest/
+          yes | ./latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platforms;android-33" "platform-tools" "build-tools;34.0.0"
 
       - name: Generate buildozer.spec
         run: |
