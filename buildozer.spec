@@ -1,73 +1,90 @@
-# Buildozer Spec File
 [app]
-title = FaceRecognitionApp
-package.name = facerecognitionapp
-package.domain = org.apurv.facerecognition
+title = FacialRecognitionApp
+package.name = facialrecognition
+package.domain = org.example
 source.dir = .
-source.include_exts = py,png,jpg,kv,atlas
 version = 1.0
-requirements = python3,kivy,opencv-python,numpy,requests,pillow
+requirements = python3,kivy,opencv-python,numpy,requests,certifi,idna,urllib3,chardet
 orientation = portrait
 fullscreen = 1
-
-# Icon and Presplash (optional)
-icon.filename = %(source.dir)s/icon.png
-presplash.filename = %(source.dir)s/presplash.png
-
-# Entry point
-entrypoint = main.py
-
-# Android Permissions
-android.permissions = CAMERA, INTERNET, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, VIBRATE, WAKE_LOCK, RECEIVE_BOOT_COMPLETED
-
-# Android API and SDK
+android.permissions = CAMERA,INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE,WAKE_LOCK,FOREGROUND_SERVICE,RECEIVE_BOOT_COMPLETED,VIBRATE,RECORD_AUDIO
 android.minapi = 21
 android.target = 33
 android.ndk = 25b
-android.ndk_api = 21
+android.api = 33
+android.archs = arm64-v8a,armeabi-v7a
+android.enable_androidx = 1
+android.useandroidx = 1
+android.gradle_dependencies = androidx.appcompat:appcompat:1.4.1,androidx.swiperefreshlayout:swiperefreshlayout:1.1.0
+android.compile_options = sourceCompatibility=1.8 targetCompatibility=1.8
+android.allow_backup = 1
+android.logcat_filters = *:S python:D
 
-# Architecture
-android.archs = armeabi-v7a, arm64-v8a
+# Java classes or jars to add to the classpath (comma separated)
+# android.add_jars =
 
-# Optimize and Strip (recommended for release)
-android.strip = true
-android.allow_backup = true
-android.debug = 0
+# Android services to add (comma separated)
+# android.services =
 
-# Java options (increase if needed)
-android.gradle_dependencies = com.google.android.material:material:1.6.1
-android.java_enable_assertions = false
-android.extra_jars =
+# Presplash background color (hex format, eg #FFFFFF)
+# presplash.color = #FFFFFF
 
-# Features
-android.use_android_native_api = true
+# Presplash image
+# presplash.filename = %(source.dir)s/data/presplash.png
 
-# Disable fullscreen if needed
-#fullscreen = 0
+# Icon of the application
+# icon.filename = %(source.dir)s/data/icon.png
 
-# Log Level
-log_level = 2
+# Supported orientations (portrait, landscape, sensor)
+# orientation = portrait
 
-# Environment Variables
-# (only set if needed)
-# environment = ENV_VAR=value
+# Entry point of the application
+entrypoint = main.py
 
-# Additional PyPI packages outside pip (none needed here)
-# p4a.branch = master
+# (str) Application theme, supported themes are: "@android:style/Theme.NoTitleBar", "@android:style/Theme.NoTitleBar.Fullscreen", "@android:style/Theme.Black", "@android:style/Theme.Light"
+# android.theme = @android:style/Theme.NoTitleBar.Fullscreen
 
-# For OpenCV camera support (optional fix)
-p4a.local_recipes = ./custom_recipes
+# Additional Java .jar files to add to the build (comma-separated)
+# android.add_jars =
 
-# Copy libraries if needed
-android.copy_libs = 1
+# Android add source folders
+# android.add_src =
 
-# (Optional) Keystore
-# android.release_keystore = /path/to/keystore
-# android.release_keyalias = mykey
-# android.release_keyalias_password = mypassword
-# android.release_keystore_password = mykeystorepassword
+# (list) List of Gradle dependencies to add to gradle.build
+# android.gradle_dependencies =
 
-# (Optional) Permissions Explanations (Android 13+)
-android.permissions_explanations = CAMERA:To detect and recognize your face for attendance, WRITE_EXTERNAL_STORAGE:To save captured images, READ_EXTERNAL_STORAGE:To access saved attendance data, INTERNET:To submit attendance to Google Forms
+# (list) Permissions to be requested on install (will be automatically added if android.permissions is not empty)
+# android.permissions =
 
-# End of file
+# (list) List of permissions to require only when the app is used in foreground (Android 10+)
+android.foreground_permissions = CAMERA,RECORD_AUDIO
+
+# Set this to True if using android.newer_sdk (API 30+)
+android.newer_sdk = True
+
+# Android extra manifests
+# android.add_manifest_xml = ./templates/manifest.xml
+
+# Don't compress these file extensions
+android.keep_extensions = .jpg,.png,.xml,.mp3,.wav,.ogg
+
+# Include *.so libraries
+android.include_exts = so
+
+# Android services to be declared in AndroidManifest.xml
+# android.services =
+
+# Environment variables passed to python-for-android
+# android.environment =
+
+# Workaround to avoid app crash with OpenCV or large camera features
+android.extra_args = --copy-libs
+
+# Do not strip debug symbols
+android.strip_debug = False
+
+# (str) Path to build artifact storage, absolute or relative to spec file
+# build_dir = .buildozer
+
+# (str) Custom source folders for code
+# source.include_exts = py,png,jpg,kv,atlas,json,ttf,ttc,otf,xml,mp3,wav,ogg
