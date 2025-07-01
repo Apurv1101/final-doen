@@ -10,57 +10,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-pip cython3 git zip unzip openjdk-17-jdk wget autoconf libtool pkg-config
-          python3 -m pip install --upgrade pip
-          pip install cython buildozer
+          sudo apt-get install -y libtool autoconf pkg-config zip unzip openjdk-17-jdk python3-pip
+          pip install --upgrade pip
+          pip install buildozer cython
 
-      - name: Setup Android SDK Tools
+      - name: Install Android SDK Command-line Tools
         run: |
-          mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools
-          cd $HOME/.buildozer/android/platform/android-sdk/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O sdk.zip
-          unzip sdk.zip -d cmdline-tools
-          mv cmdline-tools $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest
-          chmod +x $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager
-          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platforms;android-33" "platform-tools" "build-tools;34.0.0"
+          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          cd ~/.buildozer/android/platform/android-sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip
+          mv cmdline-tools latest
 
-      - name: Set Buildozer SDK path manually
+      - name: Accept Android SDK licenses
         run: |
-          mkdir -p $HOME/.buildozer
-          echo "[buildozer]" > $HOME/.buildozer/global.ini
-          echo "android.sdk_path = $HOME/.buildozer/android/platform/android-sdk" >> $HOME/.buildozer/global.ini
+          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --licenses || true
 
-      - name: Generate buildozer.spec
+      - name: Install Buildozer requirements
         run: |
-          buildozer init
-          sed -i "s/^title = .*/title = FaceRecognitionApp/" buildozer.spec
-          sed -i "s/^package.name = .*/package.name = facerecognitionapp/" buildozer.spec
-          sed -i "s/^package.domain = .*/package.domain = org.example/" buildozer.spec
-          sed -i "s/^source.dir = .*/source.dir = ./" buildozer.spec
-          sed -i "s/^source.include_exts = .*/source.include_exts = py,png,jpg,kv,atlas,json,xml/" buildozer.spec
-          sed -i "s/^requirements = .*/requirements = python3,kivy,opencv-python,numpy,requests/" buildozer.spec
-          sed -i "s/^android.permissions = .*/android.permissions = CAMERA,INTERNET,WRITE_EXTERNAL_STORAGE,READ_EXTERNAL_STORAGE/" buildozer.spec
-          sed -i "s/^android.api = .*/android.api = 33/" buildozer.spec
-          sed -i "s/^android.minapi = .*/android.minapi = 24/" buildozer.spec
-          sed -i "s/^android.ndk = .*/android.ndk = 25b/" buildozer.spec
-          sed -i "s/^android.archs = .*/android.archs = arm64-v8a,armeabi-v7a/" buildozer.spec
+          sudo apt install -y libffi-dev libssl-dev
+          pip install --upgrade setuptools
+          buildozer android dependencies
 
-      - name: Build APK
-        run: buildozer android debug
+      - name: Build the APK
+        run: |
+          buildozer -v android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: facialrecognition-debug-apk
+          name: app-debug.apk
           path: bin/*.apk
