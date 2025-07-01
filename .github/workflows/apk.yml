@@ -36,12 +36,21 @@ jobs:
           chmod +x latest/bin/sdkmanager
           yes | ./latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platforms;android-33" "platform-tools" "build-tools;34.0.0"
 
+      - name: Manually install Apache Ant
+        run: |
+          mkdir -p $HOME/.buildozer/android/platform/apache-ant-1.9.4
+          cd $HOME/.buildozer/android/platform
+          wget https://archive.apache.org/dist/ant/binaries/apache-ant-1.9.4-bin.tar.gz
+          tar -xzf apache-ant-1.9.4-bin.tar.gz
+          mv apache-ant-1.9.4 apache-ant-1.9.4-bin
+
       - name: Set Buildozer SDK & NDK paths manually
         run: |
           mkdir -p $HOME/.buildozer
           echo "[buildozer]" > $HOME/.buildozer/global.ini
           echo "android.sdk_path = $HOME/.buildozer/android/platform/android-sdk" >> $HOME/.buildozer/global.ini
           echo "android.ndk_path = $HOME/.buildozer/android/platform/android-ndk-r25b" >> $HOME/.buildozer/global.ini
+          echo "android.ant_path = $HOME/.buildozer/android/platform/apache-ant-1.9.4-bin" >> $HOME/.buildozer/global.ini
           echo "android.accept_sdk_license = true" >> $HOME/.buildozer/global.ini
           echo "p4a.branch = master" >> $HOME/.buildozer/global.ini
           echo "p4a.bootstrap = sdl2" >> $HOME/.buildozer/global.ini
