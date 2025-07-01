@@ -36,11 +36,15 @@ jobs:
           chmod +x latest/bin/sdkmanager
           yes | ./latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platforms;android-33" "platform-tools" "build-tools;34.0.0"
 
-      - name: Set Buildozer SDK path manually
+      - name: Set Buildozer SDK & NDK paths manually
         run: |
           mkdir -p $HOME/.buildozer
           echo "[buildozer]" > $HOME/.buildozer/global.ini
           echo "android.sdk_path = $HOME/.buildozer/android/platform/android-sdk" >> $HOME/.buildozer/global.ini
+          echo "android.ndk_path = $HOME/.buildozer/android/platform/android-ndk-r25b" >> $HOME/.buildozer/global.ini
+          echo "android.accept_sdk_license = true" >> $HOME/.buildozer/global.ini
+          echo "p4a.branch = master" >> $HOME/.buildozer/global.ini
+          echo "p4a.bootstrap = sdl2" >> $HOME/.buildozer/global.ini
 
       - name: Generate buildozer.spec
         run: |
