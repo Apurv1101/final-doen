@@ -30,10 +30,11 @@ jobs:
           mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools
           cd $HOME/.buildozer/android/platform/android-sdk/cmdline-tools
           wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O sdk.zip
-          unzip sdk.zip -d cmdline-tools
+          unzip sdk.zip -d temp
           mkdir -p latest
-          mv cmdline-tools/* latest/
-          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platforms;android-33" "platform-tools" "build-tools;34.0.0"
+          mv temp/cmdline-tools/* latest/
+          chmod +x latest/bin/sdkmanager
+          yes | ./latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platforms;android-33" "platform-tools" "build-tools;34.0.0"
 
       - name: Set Buildozer SDK path manually
         run: |
