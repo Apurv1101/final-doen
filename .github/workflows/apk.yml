@@ -7,54 +7,38 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
-      - name: Checkout Repo
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'  # fixed from 3.1 to a valid version
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y zip unzip openjdk-17-jdk python3-pip autoconf libtool build-essential
-          pip install --upgrade pip
-          pip install buildozer cython
+          sudo apt-get update
+          sudo apt-get install -y \
+            autoconf automake build-essential \
+            libtool pkg-config zip unzip openjdk-17-jdk \
+            zlib1g-dev libncurses5 libstdc++6 curl git
+          python -m pip install --upgrade pip setuptools wheel
+          pip install buildozer cython virtualenv
 
-      - name: Install Android SDK & NDK manually
+      - name: Create default buildozer.spec if missing
         run: |
-          mkdir -p ~/.buildozer/android/platform
-          cd ~/.buildozer/android/platform
+          if [ ! -f buildozer.spec ]; then
+            echo "[app]\n\n# (str) Title of your application\ntitle = MyApp\n\n# (str) Package name\npackage.name = myapp\n\n# (str) Package domain (needed for android/ios packaging)\npackage.domain = org.test\n\n# (str) Source code where the main.py live\nsource.dir = .\nsource.include_exts = py,png,jpg,kv,atlas\n\n# (list) Application requirements\nrequirements = python3,kivy,opencv-python,numpy,requests\n\n# (str) Entry point\nentrypoint = main.py\n\n# (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)\norientation = portrait\n\n# (bool) Indicate if the application should be fullscreen or not\nfullscreen = 1\n\n# (str) Android NDK version to use\nandroid.ndk = 25b\n\n# (int) Android API to use\nandroid.api = 31\n\n# (int) Minimum API your APK will support\nandroid.minapi = 21\n\n# (str) Android archs\nandroid.arch = armeabi-v7a, arm64-v8a\n\n[buildozer]\n# (str) Log level (0 = error only, 1 = normal, 2 = verbose, 3 = debug)
+log_level = 2\n" > buildozer.spec
+          fi
 
-          # Install Command Line Tools
-          mkdir -p android-sdk/cmdline-tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-          unzip cmdline-tools.zip -d android-sdk/cmdline-tools
-          mv android-sdk/cmdline-tools/cmdline-tools android-sdk/cmdline-tools/latest
-
-          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
-
-          yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;21.4.7075529"
-
-      - name: Set environment variables
+      - name: Initialize buildozer
         run: |
-          echo "ANDROIDSDK=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
-          echo "ANDROIDNDK=$HOME/.buildozer/android/platform/android-sdk/ndk/21.4.7075529" >> $GITHUB_ENV
-          echo "ANDROID_NDK_HOME=$HOME/.buildozer/android/platform/android-sdk/ndk/21.4.7075529" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk" >> $GITHUB_ENV
+          buildozer android clean
 
-      - name: Run Buildozer to build APK
+      - name: Build APK
         run: |
           buildozer android debug
-
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: built-apk
-          path: bin/*.apk
