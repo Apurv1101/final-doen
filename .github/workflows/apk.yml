@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-pip cython3 git zip unzip openjdk-17-jdk wget
+          sudo apt-get install -y python3-pip cython3 git zip unzip openjdk-17-jdk wget autoconf libtool pkg-config
           python3 -m pip install --upgrade pip
           pip install cython buildozer
 
