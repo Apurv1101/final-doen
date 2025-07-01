@@ -7,11 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
@@ -20,25 +20,23 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            autoconf automake build-essential \
-            libtool pkg-config zip unzip openjdk-17-jdk \
-            zlib1g-dev libncurses5 libstdc++6 curl git
-          python -m pip install --upgrade pip setuptools wheel
-          pip install buildozer cython virtualenv
+          sudo apt update
+          sudo apt install -y build-essential libssl-dev libffi-dev python3-dev python3-pip git zip unzip openjdk-17-jdk autoconf automake libtool pkg-config zlib1g-dev libncurses5 libncurses5-dev libncursesw5 libstdc++6
+          pip install --upgrade pip setuptools cython virtualenv
+          pip install buildozer
 
-      - name: Create default buildozer.spec if missing
+      - name: Create buildozer.spec if missing
         run: |
           if [ ! -f buildozer.spec ]; then
-            echo "[app]\n\n# (str) Title of your application\ntitle = MyApp\n\n# (str) Package name\npackage.name = myapp\n\n# (str) Package domain (needed for android/ios packaging)\npackage.domain = org.test\n\n# (str) Source code where the main.py live\nsource.dir = .\nsource.include_exts = py,png,jpg,kv,atlas\n\n# (list) Application requirements\nrequirements = python3,kivy,opencv-python,numpy,requests\n\n# (str) Entry point\nentrypoint = main.py\n\n# (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)\norientation = portrait\n\n# (bool) Indicate if the application should be fullscreen or not\nfullscreen = 1\n\n# (str) Android NDK version to use\nandroid.ndk = 25b\n\n# (int) Android API to use\nandroid.api = 31\n\n# (int) Minimum API your APK will support\nandroid.minapi = 21\n\n# (str) Android archs\nandroid.arch = armeabi-v7a, arm64-v8a\n\n[buildozer]\n# (str) Log level (0 = error only, 1 = normal, 2 = verbose, 3 = debug)
-log_level = 2\n" > buildozer.spec
+            buildozer init
           fi
-
-      - name: Initialize buildozer
-        run: |
-          buildozer android clean
 
       - name: Build APK
         run: |
           buildozer android debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: built-apk
+          path: bin/*.apk
