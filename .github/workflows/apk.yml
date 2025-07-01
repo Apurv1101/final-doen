@@ -55,6 +55,10 @@ jobs:
           echo "p4a.branch = master" >> $HOME/.buildozer/global.ini
           echo "p4a.bootstrap = sdl2" >> $HOME/.buildozer/global.ini
 
+          # Fix legacy sdkmanager path issue
+          mkdir -p $HOME/.buildozer/android/platform/android-sdk/tools/bin
+          ln -s $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager $HOME/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
+
       - name: Generate buildozer.spec
         run: |
           buildozer init
