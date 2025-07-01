@@ -25,15 +25,13 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install cython buildozer
 
-      - name: Install Android SDK Build Tools manually
+      - name: Setup Android SDK Tools
         run: |
-          mkdir -p $HOME/.buildozer/android/platform
-          cd $HOME/.buildozer/android/platform
-          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O cmdline-tools.zip
-          unzip -q cmdline-tools.zip -d cmdline-tools
           mkdir -p $HOME/.buildozer/android/platform/android-sdk/cmdline-tools
-          mv cmdline-tools $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest
-          yes | $HOME/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platforms;android-33" "platform-tools" "build-tools;34.0.0"
+          cd $HOME/.buildozer/android/platform/android-sdk/cmdline-tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip -O sdk.zip
+          unzip sdk.zip -d latest
+          yes | ./latest/bin/sdkmanager --sdk_root=$HOME/.buildozer/android/platform/android-sdk "platforms;android-33" "platform-tools" "build-tools;34.0.0"
 
       - name: Generate buildozer.spec
         run: |
@@ -51,8 +49,7 @@ jobs:
           sed -i "s/^android.archs = .*/android.archs = arm64-v8a,armeabi-v7a/" buildozer.spec
 
       - name: Build APK
-        run: |
-          buildozer android debug
+        run: buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
